@@ -232,6 +232,11 @@ Thumbs.dbk
 *.swp
 *.swo
 *~
+pyrightconfig.json
 
-*/GUIA_DESARROLLO.md
-*/PROBLEM.md
+# Documentation
+docs/*
+!docs/MODELO_DE_NEGOCIO.md
+!docs/COMMANDS.md
+
+
