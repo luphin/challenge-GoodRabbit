@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     environment: str = "dev"
     api_port: int = 8000
+    database_url: str
 
 
 settings = Settings()
