@@ -47,6 +47,35 @@ correspondiente exacto en la implementación.
 | **BR-09** | Integridad operacional: no eliminar un empleado con turnos, ni una regla con asignaciones | 409 |
 | **BR-10** | Las horas se calculan con aritmética `Decimal` exacta; sin redondeos flotantes | interna (`Numeric(4,2)`) |
 
+### Ejemplos de rechazo
+
+Límite diario excedido (turno individual):
+
+```json
+{
+  "detail": "El empleado 1 excede el límite diario de 8h del 2026-09-08: ya tiene 8h asignadas y el turno aporta 0.5h (excedente: 0.5h)"
+}
+```
+
+Sobre traslapes (BR-05) la decisión adoptada — a criterio del candidato según
+lo conversado con el planteador — es **rechazar con causa**: sobrescribir
+turnos silenciosamente puede destruir asignaciones existentes sin aviso del
+operador.
+
+Carga masiva con un ítem inválido (BR-08, all-or-nothing):
+
+```json
+{
+  "detail": [
+    { "index": 1, "employee_id": 2, "shift_date": "2026-09-11",
+      "causa": "El empleado 2 excede el límite diario de 8h del 2026-09-11: ya tiene 0h asignadas y el turno aporta 9h (excedente: 1h)" }
+  ]
+}
+```
+
+Los límites se respetan también **entre turnos del mismo lote**: cada ítem
+validado se hace visible para el siguiente dentro de la transacción.
+
 ---
 
 ## 3. Modelo de datos
