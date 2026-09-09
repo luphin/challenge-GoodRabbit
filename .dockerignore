@@ -5,11 +5,13 @@ venv
 __pycache__
 *.pyc
 .env
-tests
-docs
+.env.example
+requirements-dev.txt
+Makefile
+tests/
+docs/
 Dockerfile
 docker-compose.yml
 .dockerignore
 README.md
 LICENSE
-docs/*
