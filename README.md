@@ -11,7 +11,9 @@ ER, arquitectura y requisitos está en
 
 ## Despliegue
 
-**Recomendado: contenedor.** Migración automática del esquema al arrancar:
+> Definir `.env`, solo para pruebas `cat .env.example > .env`
+
+### **Recomendado: contenedor.** Migración automática del esquema al arrancar:
 
 ```bash
 docker compose up --build
@@ -24,7 +26,7 @@ docker compose exec api python scripts/seed.py   # datos demo (idempotente, opci
 | Swagger (`/docs`) | http://localhost:8000/docs |
 | Adminer | http://localhost:8080  \ sytem: `PostgreSQL`, servidor: `db`, usuario: `turnos`, clave: `turnos_dev` |
 
-Demo del flujo completo del enunciado (reset de BD incluido):
+## Demo del flujo completo del enunciado (reset de BD incluido):
 
 ```bash
 make demo
