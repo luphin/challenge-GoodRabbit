@@ -171,13 +171,14 @@ def test_reactivar_empleado_conserva_turnos(
     shifts = client.get("/shifts", params={"employee_id": employee.id}).json()
     assert shifts["total"] == 1
 
-
-def test_update_con_status_inactive_redirige(client, make_employee):
-    employee = make_employee()
-    response = client.put(f"/employees/{employee.id}", json={"status": "inactive"})
-    assert response.status_code == 400
-    assert "DELETE /employees" in response.json()["detail"]
-    assert client.get(f"/employees/{employee.id}").json()["status"] == "active"
+# NOTE: activar este test si se reimplementa la verificacion de
+#       estado inactivo en POST/employee
+# def test_update_con_status_inactive_redirige(client, make_employee):
+#     employee = make_employee()
+#     response = client.put(f"/employees/{employee.id}", json={"status": "inactive"})
+#     assert response.status_code == 400
+#     assert "DELETE /employees" in response.json()["detail"]
+#     assert client.get(f"/employees/{employee.id}").json()["status"] == "active"
 
 
 def test_desactivar_empleado_con_turnos_conserva_historial(

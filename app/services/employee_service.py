@@ -1,7 +1,7 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import BusinessRuleError, ConflictError, NotFoundError
+from app.core.exceptions import ConflictError, NotFoundError
 from app.models import Employee
 from app.schemas.employee import EmployeeCreate, EmployeeUpdate
 
@@ -64,7 +64,8 @@ def update_employee(
 ) -> Employee:
     changes = data.model_dump(exclude_unset=True)
     requested_status = changes.pop("status", None)
-    # validar si se quiere desactivar al usuario
+    # HACK:  se deberia definir si es necesario verificarlo en esta función
+    #        - si se activa, descomentar test respectivo
     # if requested_status == "inactive":
     #     raise BusinessRuleError(
     #         "Para desactivar al empleado use DELETE /employees/{id}"
