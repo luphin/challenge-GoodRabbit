@@ -14,6 +14,9 @@ qa: lint types test
 demo:
 	docker compose down -v
 	docker compose up --build -d
-	@until docker compose exec -T api curl -sf http://localhost:8000/health > /dev/null 2>&1; do sleep 2; done
+	@echo "Esperando la API..."
+	@i=1; while ! curl -sf --max-time 2 http://localhost:8000/health > /dev/null; do \
+		if [ $$i -ge 60 ]; then echo "La API no responde tras 120s"; exit 1; fi; \
+		i=$$((i+1)); sleep 2; done
 	docker compose exec api python scripts/seed.py
 	bash scripts/demo.sh
