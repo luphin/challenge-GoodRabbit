@@ -243,7 +243,7 @@ primer error acumulado se revierte todo el lote (BR-08).
 | Tecnología | Utilidad |
 |---|---|
 | **pytest** | Framework de tests (unitarios + integración) |
-| **httpx** | `TestClient` para verificación de endpoints de punta a punta |
+| **httpx2** | `TestClient` para verificación de endpoints de punta a punta |
 | **pytest-cov** | Medición de cobertura (objetivo ≥ 85%, logrado 99%) |
 | **ruff** | Linter de calidad estática (0 violaciones) |
 | **mypy** | Type checker estático (0 errores), con plugin de Pydantic |
