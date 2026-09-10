@@ -97,5 +97,4 @@ docs/                 # modelo de negocio, guía de desarrollo, comandos
 | Documento | Contenido |
 |---|---|
 | [`docs/MODELO_DE_NEGOCIO.md`](docs/MODELO_DE_NEGOCIO.md) | Lenguaje ubicuo, reglas de negocio, modelo ER, arquitectura, requisitos y tecnologías |
-| [`docs/PRUEBAS_DEMO.txt`](docs/PRUEBAS_DEMO.txt) | Set de pruebas interactivo (curl por escenario con código esperado) |
 | [`docs/COMMANDS.md`](docs/COMMANDS.md) | Comandos de operación: Docker, Alembic, testing, demo |
