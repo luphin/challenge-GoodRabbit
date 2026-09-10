@@ -11,7 +11,7 @@ ER, arquitectura y requisitos está en
 
 ## Despliegue
 
-> Definir `.env`, solo para pruebas `cat .env.example > .env`
+> Definir `.env`, solo para pruebas `cp .env.example .env`
 
 ### **Recomendado: contenedor.** Migración automática del esquema al arrancar:
 
@@ -26,7 +26,9 @@ docker compose exec api python scripts/seed.py   # datos demo (idempotente, opci
 | Swagger (`/docs`) | http://localhost:8000/docs |
 | Adminer | http://localhost:8080  \ sytem: `PostgreSQL`, servidor: `db`, usuario: `turnos`, clave: `turnos_dev` |
 
-## Demo del flujo completo del enunciado (reset de BD incluido):
+
+### Demo del flujo completo del enunciado (reset de BD incluido):
+Se ejecuta el build completo + seed + un flujo completo utilizando las rutas.
 
 ```bash
 make demo
@@ -35,7 +37,7 @@ make demo
 ### Alternativa: desarrollo local (referencia)
 
 ```bash
-python3 -m venv .venv && . .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env                              # ajustar credenciales
 
@@ -63,8 +65,8 @@ dentro de una transacción que se revierte, sin truncate entre tests.
 
 ```bash
 make qa          # flujo completo: lint + types + test
-make lint        # ruff check (0 violaciones)
-make types       # mypy (0 errores en 33 archivos)
+make lint        # ruff check 
+make types       # mypy 
 
 .venv/bin/ruff format app tests scripts    # auto-formateo (opcional, fuera del qa)
 ```

@@ -138,7 +138,7 @@ python scripts/seed.py
 
 ---
 
-## Fase 6 - Testing
+## Testing
 
 ```bash
 # Correr TODA la suite (104 tests: unitarios + integración)
@@ -186,7 +186,7 @@ echo "SELECT 'CREATE DATABASE turnos_test' WHERE NOT EXISTS (SELECT FROM pg_data
 
 ```bash
 make lint    # ruff check sobre app/, tests/ y scripts/
-make types   # mypy sobre app/ (0 errores esperados)
+make types   # mypy sobre app/ 
 make test    # pytest con cobertura
 make qa      # lint + types + test (todo el flujo de QA)
 
