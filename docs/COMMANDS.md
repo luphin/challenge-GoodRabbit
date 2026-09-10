@@ -1,4 +1,4 @@
-# Comandos del proyecto — API de Turnos Laborales
+# Comandos del proyecto - API de Turnos Laborales
 
 > Referencia rápida de los comandos utiles, organizados por fase.
 > Todos los comandos se corren desde la raíz del proyecto.
@@ -17,7 +17,7 @@ docker --version
 # Crear el entorno virtual (carpeta .venv con su propio site-packages)
 python3 -m venv .venv
 
-# Activarlo (zsh/macOS) — hay que activarlo en cada terminal nueva
+# Activarlo
 . .venv/bin/activate
 
 # Desactivarlo cuando se termine la sesión
@@ -71,7 +71,7 @@ docker compose logs -f api
 # Apagar todos los contenedores (los DATOS del volumen pgdata SOBREVIVEN)
 docker compose down
 
-# Apagar Y BORRAR el volumen de datos (reset total de la BD — "formatear")
+# Apagar Y BORRAR el volumen de datos (reset total de la BD - "formatear")
 docker compose down -v
 
 # Reconstruir solo la imagen de la API sin levantar nada
@@ -138,10 +138,10 @@ python scripts/seed.py
 
 ---
 
-## Fase 6 — Testing
+## Fase 6 - Testing
 
 ```bash
-# Correr TODA la suite (97 tests: unitarios + integración)
+# Correr TODA la suite (104 tests: unitarios + integración)
 pytest
 
 # Con reporte de cobertura (objetivo: ≥85% en app/services)
@@ -173,7 +173,7 @@ pytest -x
 ### Base de datos de test
 
 ```bash
-# Crear la BD de test (misma instancia, distinta base) — solo la primera vez
+# Crear la BD de test (misma instancia, distinta base) - solo la primera vez
 echo "SELECT 'CREATE DATABASE turnos_test' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'turnos_test')\gexec" | docker compose exec -T db psql -U turnos -d postgres
 
 # Los tests NO tocan la BD de desarrollo: conftest.py apunta DATABASE_URL a
@@ -182,7 +182,7 @@ echo "SELECT 'CREATE DATABASE turnos_test' WHERE NOT EXISTS (SELECT FROM pg_data
 
 ---
 
-## Makefile — flujo de calidad
+## Makefile - flujo de calidad
 
 ```bash
 make lint    # ruff check sobre app/, tests/ y scripts/

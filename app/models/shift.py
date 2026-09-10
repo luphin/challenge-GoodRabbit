@@ -10,7 +10,7 @@ from app.models.employee import Employee
 class Shift(Base):
     __tablename__ = "shifts"
     __table_args__ = (
-        Index("ix_shifts_employee_date", "employee_id", "shift_date"),
+        Index("ix_shifts_employee_shift_date", "employee_id", "shift_date"),
     )
 
     shift_id: Mapped[int] = mapped_column(primary_key=True)

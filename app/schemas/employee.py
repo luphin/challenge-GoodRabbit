@@ -1,4 +1,8 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+EmployeeStatus = Literal["active", "inactive"]
 
 
 class EmployeeCreate(BaseModel):
@@ -13,6 +17,7 @@ class EmployeeUpdate(BaseModel):
     last_name: str | None = Field(default=None, min_length=1)
     phone_number: str | None = Field(default=None, min_length=6)
     email: EmailStr | None = None
+    status: EmployeeStatus | None = None
 
 
 class EmployeeRead(BaseModel):
@@ -23,3 +28,11 @@ class EmployeeRead(BaseModel):
     last_name: str
     phone_number: str
     email: str
+    status: str
+
+
+class EmployeeDeactivation(BaseModel):
+    id: int
+    status: str
+    regla_removida: bool
+    mensaje: str

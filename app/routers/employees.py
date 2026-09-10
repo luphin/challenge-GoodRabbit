@@ -1,11 +1,17 @@
 from datetime import date
+from typing import Literal
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.common import Page
-from app.schemas.employee import EmployeeCreate, EmployeeRead, EmployeeUpdate
+from app.schemas.employee import (
+    EmployeeCreate,
+    EmployeeDeactivation,
+    EmployeeRead,
+    EmployeeUpdate,
+)
 from app.schemas.report import EmployeeReport
 from app.services import employee_service, report_service
 
@@ -16,12 +22,15 @@ router = APIRouter(prefix="/employees", tags=["Empleados"])
 def list_employees(
     email: str | None = Query(default=None, description="Filtro exacto por email"),
     name: str | None = Query(default=None, description="Búsqueda parcial por nombre"),
+    status: Literal["active", "inactive"] | None = Query(
+        default=None, description="Filtro por estado"
+    ),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
     employees, total = employee_service.list_employees(
-        db, email=email, name=name, limit=limit, offset=offset
+        db, email=email, name=name, status=status, limit=limit, offset=offset
     )
     return Page(items=employees, total=total, limit=limit, offset=offset)
 
@@ -71,7 +80,7 @@ def get_employee_report(
 @router.put(
     "/{employee_id}",
     response_model=EmployeeRead,
-    summary="Actualizar empleado (solo campos enviados)",
+    summary="Actualizar empleado (solo campos enviados; usar DELETE para desactivar)",
 )
 def update_employee(
     employee_id: int, data: EmployeeUpdate, db: Session = Depends(get_db)
@@ -79,6 +88,22 @@ def update_employee(
     return employee_service.update_employee(db, employee_id, data)
 
 
-@router.delete("/{employee_id}", status_code=204, summary="Eliminar empleado")
-def delete_employee(employee_id: int, db: Session = Depends(get_db)) -> None:
-    employee_service.delete_employee(db, employee_id)
+@router.delete(
+    "/{employee_id}",
+    response_model=EmployeeDeactivation,
+    response_model_exclude_none=True,
+    summary="Desactivar empleado (soft delete)",
+)
+def delete_employee(employee_id: int, db: Session = Depends(get_db)):
+    employee, regla_removida = employee_service.deactivate_employee(db, employee_id)
+    mensaje = (
+        f"El empleado {employee_id} fue desactivado y su regla laboral removida. "
+        f"Un empleado inactivo no puede recibir turnos; reactivelo con "
+        f"PUT /employees/{employee_id} y status=active."
+        if regla_removida
+        else f"El empleado {employee_id} fue desactivado. Un empleado inactivo "
+        f"no puede recibir turnos; reactivelo con PUT /employees/{employee_id}."
+    )
+    return EmployeeDeactivation(
+        id=employee.id, status=employee.status, regla_removida=regla_removida, mensaje=mensaje
+    )

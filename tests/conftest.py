@@ -68,7 +68,7 @@ def make_rule(db_session):
             name=name, max_hours_day=Decimal(day), max_hours_week=Decimal(week)
         )
         db_session.add(rule)
-        db_session.flush()
+        db_session.commit()
         return rule
 
     return _make
@@ -84,7 +84,7 @@ def make_employee(db_session):
             email=email or f"{name.lower()}.{uuid.uuid4().hex[:8]}@test.cl",
         )
         db_session.add(employee)
-        db_session.flush()
+        db_session.commit()
         return employee
 
     return _make
@@ -97,7 +97,7 @@ def make_assignment(db_session):
             employee_id=employee.id, shift_rule_id=rule.shift_rule_id
         )
         db_session.add(assignment)
-        db_session.flush()
+        db_session.commit()
         return assignment
 
     return _make
@@ -118,7 +118,7 @@ def make_shift(db_session):
             end_time=time.fromisoformat(end),
         )
         db_session.add(shift)
-        db_session.flush()
+        db_session.commit()
         return shift
 
     return _make

@@ -1,4 +1,4 @@
-# Modelo de Negocio — Gestión de Turnos Laborales
+# Modelo de Negocio - Gestión de Turnos Laborales
 
 > Documento de dominio: lenguaje ubicuo, reglas de negocio, modelo de datos,
 > arquitectura y requisitos del producto. Complementa el `README.md` (setup y
@@ -40,12 +40,13 @@ correspondiente exacto en la implementación.
 | **BR-02** | Límite semanal: idéntico al BR-01 sobre la **semana calendario (lunes a domingo)** de la fecha de inicio | 422 con rango de la semana |
 | **BR-03** | Duración del turno mayor a cero (`end_time ≠ start_time`) | 422 |
 | **BR-04** | Turno nocturno: si `end_time < start_time`, cruza la medianoche (ej. 22:00→06:00 = 8 h). Sus horas se atribuyen al **día de inicio** para BR-01 y BR-02 | soportado |
-| **BR-05** | Sin traslapes para el mismo empleado, comparando el **intervalo datetime real** (un nocturno conflicta con turnos del día siguiente) — decisión adoptada: rechazo, no sobrescritura | 422 con intervalos |
+| **BR-05** | Sin traslapes para el mismo empleado, comparando el **intervalo datetime real** (un nocturno conflicta con turnos del día siguiente) - decisión adoptada: rechazo, no sobrescritura | 422 con intervalos |
 | **BR-06** | El empleado debe tener una regla laboral asignada antes de programar turnos | 422 con instrucción |
 | **BR-07** | Una regla activa por empleado (única `employee_id` en la unión, al nivel de BD) | 409 si duplicada |
 | **BR-08** | Carga masiva all-or-nothing: si cualquier ítem viola una regla, nada se persiste; respuesta lista errores por índice | 422 + detalles por ítem |
-| **BR-09** | Integridad operacional: no eliminar un empleado con turnos, ni una regla con asignaciones | 409 |
+| **BR-09** | **Desactivación en lugar de eliminación física (soft delete)**: `DELETE /employees/{id}` marca al empleado `inactive`, remueve su asignación de regla y notifica; sus turnos históricos se **conservan** | 200 con JSON de desactivación |
 | **BR-10** | Las horas se calculan con aritmética `Decimal` exacta; sin redondeos flotantes | interna (`Numeric(4,2)`) |
+| **BR-11** | Un empleado **inactivo** no puede recibir turnos (create, PUT o bulk); el nombre de una regla no es único (dos reglas pueden llamarse igual y diferir en límites) | 409 (directo) / error por ítem en bulk |
 
 ### Ejemplos de rechazo
 
@@ -57,8 +58,8 @@ Límite diario excedido (turno individual):
 }
 ```
 
-Sobre traslapes (BR-05) la decisión adoptada — a criterio del candidato según
-lo conversado con el planteador — es **rechazar con causa**: sobrescribir
+Sobre traslapes (BR-05) la decisión adoptada - a criterio del candidato según
+lo conversado con el planteador - es **rechazar con causa**: sobrescribir
 turnos silenciosamente puede destruir asignaciones existentes sin aviso del
 operador.
 
@@ -76,6 +77,20 @@ Carga masiva con un ítem inválido (BR-08, all-or-nothing):
 Los límites se respetan también **entre turnos del mismo lote**: cada ítem
 validado se hace visible para el siguiente dentro de la transacción.
 
+### Ejemplo de desactivación (BR-09, soft delete)
+
+```json
+{
+  "id": 4,
+  "status": "inactive",
+  "regla_removida": true,
+  "mensaje": "El empleado 4 fue desactivado y su regla laboral removida."
+}
+```
+
+Reactivación vía `PUT /employees/{id}` con `{"status": "active"}`; desactivar
+vía PUT rechaza con 400 (redirige al DELETE).
+
 ---
 
 ## 3. Modelo de datos
@@ -92,6 +107,7 @@ erDiagram
         string last_name
         string phone_number
         string email UK
+        string status "active | inactive (soft delete)"
     }
     Shift {
         int shift_id PK
@@ -174,16 +190,16 @@ primer error acumulado se revierte todo el lote (BR-08).
 
 | ID | Requisito | Estado |
 |---|---|---|
-| **RF-01** | CRUD de empleados con paginación y filtros (nombre parcial, email exacto) | ✅ |
-| **RF-02** | CRUD de reglas laborales con validación de coherencia (semana ≥ día, límites > 0) | ✅ |
-| **RF-03** | Asignación de una regla activa a cada empleado, con reemplazo y baja | ✅ |
-| **RF-04** | CRUD de turnos bajo el filtro inteligente: BR-01 a BR-06 | ✅ |
-| **RF-05** | Carga masiva `/shifts/bulk` all-or-nothing con errores por índice | ✅ |
-| **RF-06** | Reporte por empleado: perfil, regla aplicada, métricas día/semana vs. límites y turnos filtrables | ✅ |
-| **RF-07** | Toda violación se rechaza informando la causa en español (límite, consumo, excedente) | ✅ |
-| **RF-08** | Soporte de turnos que cruzan la medianoche (confirmado por el planteador) | ✅ |
-| **RF-09** | Listado de turnos filtrable por empleado y rango de fechas | ✅ |
-| **RF-10** | Documentación OpenAPI con descripciones en español de todos los endpoints | ✅ |
+| **RF-01** | CRUD de empleados con paginación y filtros (nombre parcial, email exacto) | DONE |
+| **RF-02** | CRUD de reglas laborales con validación de coherencia (semana ≥ día, límites > 0) | DONE |
+| **RF-03** | Asignación de una regla activa a cada empleado, con reemplazo y baja | DONE |
+| **RF-04** | CRUD de turnos bajo el filtro inteligente: BR-01 a BR-06 | DONE |
+| **RF-05** | Carga masiva `/shifts/bulk` all-or-nothing con errores por índice | DONE |
+| **RF-06** | Reporte por empleado: perfil, regla aplicada, métricas día/semana vs. límites y turnos filtrables | DONE |
+| **RF-07** | Toda violación se rechaza informando la causa en español (límite, consumo, excedente) | DONE |
+| **RF-08** | Soporte de turnos que cruzan la medianoche (confirmado por el planteador) | DONE |
+| **RF-09** | Listado de turnos filtrable por empleado y rango de fechas | DONE |
+| **RF-10** | Documentación OpenAPI con descripciones en español de todos los endpoints | DONE |
 
 ---
 
@@ -192,7 +208,7 @@ primer error acumulado se revierte todo el lote (BR-08).
 | ID | Requisito | Cómo se cumple |
 |---|---|---|
 | **RNF-01** | Exactitud aritmética en límites de horas | `NUMERIC` + aritmética `Decimal` de punta a punta; sin `float` en decisiones de negocio |
-| **RNF-02** | Testabilidad | Validadores puros sin BD; 97 tests unitarios + integración; 99% de cobertura en la capa de dominio |
+| **RNF-02** | Testabilidad | Validadores puros sin BD; 104 tests unitarios + integración; 99% de cobertura en la capa de dominio |
 | **RNF-03** | Aislamiento de datos en tests | Patrón transaccional: cada test corre en una transacción que se revierte; BD dedicada `turnos_test` |
 | **RNF-04** | Reproducibilidad del entorno | `requirements.txt` congelado, Docker + compose, volúmenes e init-scripts |
 | **RNF-05** | Portabilidad de motor de BD | Modelos con tipos abstractos; dependencia del distribuidor aislada en `DATABASE_URL` + driver |

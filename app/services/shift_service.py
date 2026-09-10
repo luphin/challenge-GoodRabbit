@@ -4,7 +4,12 @@ from decimal import Decimal
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import BulkValidationError, NotFoundError, RuleViolationError
+from app.core.exceptions import (
+    BulkValidationError,
+    ConflictError,
+    NotFoundError,
+    RuleViolationError,
+)
 from app.models import Shift, ShiftRule
 from app.schemas.shift import ShiftBulkError, ShiftCreate, ShiftUpdate
 from app.services import employee_service, validators
@@ -104,7 +109,7 @@ def bulk_create_shifts(db: Session, items: list[ShiftCreate]) -> list[Shift]:
                 end_time=item.end_time,
                 exclude_shift_id=None,
             )
-        except (RuleViolationError, NotFoundError) as exc:
+        except (RuleViolationError, NotFoundError, ConflictError) as exc:
             errors.append(
                 ShiftBulkError(
                     index=index,
@@ -203,6 +208,10 @@ def _validate_shift(
 
 def _get_employee_rule(db: Session, employee_id: int) -> ShiftRule:
     employee = employee_service.get_employee(db, employee_id)
+    if employee.status == "inactive":
+        raise ConflictError(
+            f"El empleado {employee_id} está inactivo y no puede recibir turnos"
+        )
     if employee.rule_assignment is None:
         raise RuleViolationError(
             f"El empleado {employee_id} no tiene una regla laboral asignada; "

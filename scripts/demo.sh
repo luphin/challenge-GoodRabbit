@@ -81,7 +81,7 @@ print(f\"  día {m['daily']['shift_date']}: {m['daily']['assigned_hours']}/{m['d
 print(f\"  semana {m['weekly']['week_start']} a {m['weekly']['week_end']}: {m['weekly']['assigned_hours']}/{m['weekly']['max_hours']}h ({m['weekly']['usage_percent']}%)\")
 print(f\"  turnos programados: {d['shifts_total']}\")"
 
-section "10. Intento de borrar empleado con turnos → 409"
+section "10. Desactivar empleado (soft delete: remueve regla, conserva historial)"
 curl -s -w "\n  → HTTP %{http_code}\n" -X DELETE "$BASE/employees/$EMPLOYEE_ID"
 
-section "Demo completada — documenta y revísalo en http://localhost:8000/docs"
+section "Demo completada - Docs: http://localhost:8000/docs"
