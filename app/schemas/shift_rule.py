@@ -30,7 +30,19 @@ class ShiftRuleUpdate(BaseModel):
 
 
 class ShiftRuleRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": [
+                {
+                    "shift_rule_id": 1,
+                    "name": "Jornada Completa",
+                    "max_hours_day": "8.00 or 8",
+                    "max_hours_week": "40.00 or 40",
+                }
+            ]
+        },
+    )
 
     shift_rule_id: int
     name: str

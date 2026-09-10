@@ -29,7 +29,10 @@ def list_shifts(
         db, employee_id=employee_id, date_from=date_from, date_to=date_to,
         limit=limit, offset=offset,
     )
-    return Page(items=shifts, total=total, limit=limit, offset=offset)
+    return Page(
+        items=[ShiftRead.model_validate(s) for s in shifts],
+        total=total, limit=limit, offset=offset,
+    )
 
 
 @router.post("", response_model=ShiftRead, status_code=201, summary="Crear turno")
@@ -45,8 +48,10 @@ def create_shift(data: ShiftCreate, db: Session = Depends(get_db)):
 )
 def bulk_create_shifts(body: list[ShiftCreate], db: Session = Depends(get_db)):
     created = shift_service.bulk_create_shifts(db, body)
-    return ShiftBulkCreated(total=len(created), items=created)
-
+    return ShiftBulkCreated(
+        total=len(created),
+        items=[ShiftRead.model_validate(item) for item in created],
+    )
 
 @router.get("/{shift_id}", response_model=ShiftRead, summary="Obtener turno por id")
 def get_shift(shift_id: int, db: Session = Depends(get_db)):
@@ -61,7 +66,7 @@ def get_shift(shift_id: int, db: Session = Depends(get_db)):
 def update_shift(shift_id: int, data: ShiftUpdate, db: Session = Depends(get_db)):
     return shift_service.update_shift(db, shift_id, data)
 
-
+# NOTE: se deja como 204 sin mensaje
 @router.delete("/{shift_id}", status_code=204, summary="Eliminar turno")
 def delete_shift(shift_id: int, db: Session = Depends(get_db)) -> None:
     shift_service.delete_shift(db, shift_id)

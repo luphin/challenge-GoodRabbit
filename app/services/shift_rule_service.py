@@ -30,6 +30,8 @@ def get_shift_rule(db: Session, shift_rule_id: int) -> ShiftRule:
 
 
 def create_shift_rule(db: Session, data: ShiftRuleCreate) -> ShiftRule:
+    #TODO: faltaria validar la existencia de otra con el mismo:
+    # "name", "max_hours_day", "max_hours_week"
     rule = ShiftRule(**data.model_dump())
     db.add(rule)
     db.flush()

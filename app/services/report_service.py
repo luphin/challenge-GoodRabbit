@@ -5,12 +5,15 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models import Shift
+from app.schemas.employee import EmployeeRead
 from app.schemas.report import (
     DailyMetrics,
     EmployeeReport,
     EmployeeReportMetrics,
     WeeklyMetrics,
 )
+from app.schemas.shift import ShiftRead
+from app.schemas.shift_rule import ShiftRuleRead
 from app.services import employee_service, shift_service, validators
 
 
@@ -69,10 +72,10 @@ def build_employee_report(
     shifts_total = db.scalar(count_stmt) or 0
 
     return EmployeeReport(
-        employee=employee,
-        shift_rule=rule,
+        employee=EmployeeRead.model_validate(employee),
+        shift_rule=ShiftRuleRead.model_validate(rule) if rule is not None else None,
         metrics=metrics,
-        shifts=shifts,
+        shifts=[ShiftRead.model_validate(shift) for shift in shifts],
         shifts_total=shifts_total,
     )
 
