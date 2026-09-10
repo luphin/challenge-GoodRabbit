@@ -64,10 +64,11 @@ def update_employee(
 ) -> Employee:
     changes = data.model_dump(exclude_unset=True)
     requested_status = changes.pop("status", None)
-    if requested_status == "inactive":
-        raise BusinessRuleError(
-            "Para desactivar al empleado use DELETE /employees/{id}"
-        )
+    # validar si se quiere desactivar al usuario
+    # if requested_status == "inactive":
+    #     raise BusinessRuleError(
+    #         "Para desactivar al empleado use DELETE /employees/{id}"
+    #     )
     employee = get_employee(db, employee_id)
     new_email = changes.get("email")
     if new_email is not None and new_email != employee.email and _email_taken(db, new_email):

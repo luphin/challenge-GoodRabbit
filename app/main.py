@@ -80,6 +80,7 @@ app.include_router(shift_rules_employees.router)
 app.include_router(shifts.router)
 
 
+# API
 @app.get("/", summary="Raíz del servicio", tags=["Health"])
 async def root():
     return {

@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from app.core.exceptions import RuleViolationError
 
+# Defaults
 _SECONDS_PER_DAY = 86400
 
 
